@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resource</title>
+</head>
+<body>
+<div class="container">
+    <h1>Contact Book</h1>
+    <form class="clear" action="/" method="get">
+        <div class="none">
+            <label for="search">Search</label>
+            <input class="active" name="search" id="search" type="text">
+            <div class="border"></div>
+        </div>
+        <div class="none">
+            <label for="sorting">Sorting by:</label>
+            <select name="sorting" id="sorting">
+                <option value="name">Name</option>
+                <option value="rid">Id</option>
+                <option value="created_at">Creation Date</option>
+            </select>
+            <div class="border"></div>
+        </div>
+        <div class="none">
+            <label for="ordering">Ordering</label>
+            <select name="ordering" id="ordering">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+            <div class="border"></div>
+        </div>
+        <button>Submit</button>
+    </form>
+</div>
+<br>
+<br>
+<form action="/delete-all" method="get">
+    <a href="/create">Create</a>
+    <button> Delete All</button>
+</form>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Action</th>
+    </tr>
+    {% for resource in resources %}
+        <tr>
+            <td>
+                {{ resource.id }}
+            </td>
+            <td>
+                {{ resource.name }}
+            </td>
+            <td>
+                {{ resource.phone_number }}
+            </td>
+            <td>
+                {{ resource.email_address or '' }}
+            </td>
+            <td>
+                <a href="/get/{{ resource.id }}" type="button">View</a>
+                <a href="/update/{{ resource.id }}" type="button">Update</a>
+                <a href="/delete/{{ resource.id }}" type="button">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+
+</table>
+</body>

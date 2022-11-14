@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resource</title>
+</head>
+<body>
+<h1><a href="/">Contact Book</a></h1>
+<form action="/update/{{ resource.id }}" method="post">
+    <label for="name">Name</label>
+    <input name="name" id="name" type="text" placeholder="Enter Name" value="{{ resource.name }}">
+    <br>
+    <label for="phone">Phone</label>
+    <input name="phone" id="phone" type="text" placeholder="Enter Phone" value="{{ resource.phone_number }}">
+    <br>
+    <label for="email">Email</label>
+    <input name="email" id="email" type="text" placeholder="Enter Email" value="{{ resource.email_address or '' }}">
+    <br>
+    <label for="address">Address</label>
+    <input name="address" id="address" type="text" placeholder="Enter Address" value="{{ resource.address or '' }}">
+    <br>
+    <button>Update</button><a href="/delete/{{ resource.id }}" type="button">Delete</a>
+</form>
+</body>
