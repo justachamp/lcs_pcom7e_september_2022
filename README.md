@@ -115,3 +115,15 @@ Sorting fields: Name, Email, Created, Updated
 ### Search
 Searches in Name and Phone fields  
 <img width="897" alt="Screenshot 2022-11-28 at 2 32 04 PM" src="https://user-images.githubusercontent.com/60176169/204245946-fa9a94d5-3fa2-4ed9-9f43-d328194f12df.png">
+
+
+## References
+<a id="1">[[1]](https://www.c-sharpcorner.com/article/creating-a-crudcreate-retrieveupdate-and-delete-desktop-application-using-pyt2/)</a> 
+Raichand, R. (2020). 
+Creating A CRUD Desktop Application Using Python3 And MySQL Database Server.  
+<a id="2">[[2]](https://stackoverflow.com/a/1967793)</a> 
+Sridhar, R. (2009). 
+Tk treeview column sort.  
+<a id="3">[[2]](https://github.com/justachamp/lcs_pcom7e_september_2022.git)</a> 
+Ayubkhon, A. (2022). 
+lcs_pcom7e_september_2022.
