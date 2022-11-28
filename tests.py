@@ -82,18 +82,30 @@ class FullCycleTestCase:
         assert len(self.resource) == 0
 
     def test_search(self):
+        """Search for contact via input string in Name and Phone fields"""
+        # should return both records
         result = self.resource.search_in_names(self.resource.data.values(), 'Con')
         assert len(result) == 2
+
+        # should return only one record
+        # checking id of returned record
         result = self.resource.search_in_names(self.resource.data.values(), '2 Con')
         assert len(result) == 1
         assert result[0]['id'] == 2
+
+        # should return only one record
+        # checking id of returned record
         result = self.resource.search_in_phone_number(self.resource.data.values(), '5')
         assert len(result) == 1
         assert result[0]['id'] == 2
+
+        # should return both records
         result = self.resource.search_in_phone_number(self.resource.data.values(), '4')
         assert len(result) == 2
 
 
 if __name__ == '__main__':
+    # test client instance
     test = FullCycleTestCase()
+    # running all tests
     test.test_all()
