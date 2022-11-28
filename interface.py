@@ -6,25 +6,68 @@ from datetime import datetime as dt
 
 from resource import Resource, ResourceCreateData
 
-regex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
+# regex for Email validation
+regex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$'
+
+# variable to know if any record was selected in tree view
 contact_id = 0
 
 
 class ContactBookApp(tk.Tk):
-    resource = Resource()
+    """
+        Contact Book GUI Application
+    """
 
-    def __init__(self):
+    def __init__(self, resource: Resource):
+        self.resource = resource
         super().__init__()
         self.title("Contact Book")
         self.geometry("800x800")
-        self.register_labels()
-        self.register_entries()
-        self.register_buttons()
-        self.register_tree_view()
-        self.place_elements()
-        self.list_all()
 
-    def place_elements(self):
+        # register_labels
+        self.title_label = tk.Label(self, text="Contact Book")
+        self.name_label = tk.Label(self, text="Name:")
+        self.phone_label = tk.Label(self, text="Phone Number:")
+        self.email_label = tk.Label(self, text="Email:")
+        self.search_label = tk.Label(self, text="Search:")
+
+        # register_entries
+        self.name_entry = tk.Entry(self)
+        self.phone_entry = tk.Entry(self)
+        self.email_entry = tk.Entry(self)
+        self.search_entry = tk.Entry(self)
+
+        # register_buttons
+        self.create_button = tk.Button(self, text="Create", command=self.create_contact)
+        self.update_button = tk.Button(self, text="Update", command=self.update_contact)
+        self.delete_button = tk.Button(self, text="Delete", command=self.delete_contact)
+        self.delete_all_button = tk.Button(self, text="Delete All", command=self.delete_all_contacts)
+        self.clear_button = tk.Button(self, text="Clear", command=self.clear)
+        self.list_all_button = tk.Button(self, text="List All", command=self.list_all)
+        self.search_button = tk.Button(self, text="Search", command=self.search)
+        self.exit_button = tk.Button(self, text="Exit", command=self.exit)
+
+        # register_tree_view
+        self.tree_view = ttk.Treeview(self, show="headings", height=5, columns=("#1", "#2", "#3", "#4", "#5", "6"))
+        self.tree_view.heading('#1', text='ID', anchor='center')
+        self.tree_view.column('#1', width=60, anchor='center', stretch=False)
+        self.tree_view.heading('#2', text='Name', anchor='center',
+                               command=lambda _col="#2": self.treeview_sort_column(self.tree_view, _col, False))
+        self.tree_view.column('#2', width=10, anchor='center', stretch=True)
+        self.tree_view.heading('#3', text='Phone', anchor='center')
+        self.tree_view.column('#3', width=10, anchor='center', stretch=True)
+        self.tree_view.heading('#4', text='Email', anchor='center',
+                               command=lambda _col="#4": self.treeview_sort_column(self.tree_view, _col, False))
+        self.tree_view.column('#4', width=10, anchor='center', stretch=True)
+        self.tree_view.heading('#5', text='Created', anchor='center',
+                               command=lambda _col="#5": self.treeview_sort_column(self.tree_view, _col, False))
+        self.tree_view.column('#5', width=10, anchor='center', stretch=True)
+        self.tree_view.heading('#6', text='Updated', anchor='center',
+                               command=lambda _col="#6": self.treeview_sort_column(self.tree_view, _col, False))
+        self.tree_view.column('#6', width=10, anchor='center', stretch=True)
+        self.configure_tree_view()
+
+        # place_elements
         self.title_label.place(x=280, y=30, height=27, width=300)
         self.name_label.place(x=175, y=70, height=23, width=100)
         self.phone_label.place(x=175, y=100, height=23, width=100)
@@ -44,46 +87,8 @@ class ContactBookApp(tk.Tk):
         self.exit_button.place(x=320, y=610, height=31, width=60)
         self.tree_view.place(x=40, y=310, height=200, width=640)
 
-    def register_tree_view(self):
-        columns = {
-            "#1": "ID",
-            "#2": "Name",
-            "#3": "Phone",
-            "#4": "Email",
-            "#5": "Created",
-            "#6": "Updated",
-        }
-        self.tree_view = ttk.Treeview(self, show="headings", height=5, columns=("#1", "#2", "#3", "#4", "#5", "6"))
-        self.tree_view.heading('#1', text='ID', anchor='center')
-        self.tree_view.column('#1', width=60, anchor='center', stretch=False)
-        self.tree_view.heading('#2', text='Name', anchor='center',
-                               command=lambda _col="#2": treeview_sort_column(self.tree_view, _col, False))
-        self.tree_view.column('#2', width=10, anchor='center', stretch=True)
-        self.tree_view.heading('#3', text='Phone', anchor='center')
-        self.tree_view.column('#3', width=10, anchor='center', stretch=True)
-        self.tree_view.heading('#4', text='Email', anchor='center',
-                               command=lambda _col="#4": treeview_sort_column(self.tree_view, _col, False))
-        self.tree_view.column('#4', width=10, anchor='center', stretch=True)
-        self.tree_view.heading('#5', text='Created', anchor='center',
-                               command=lambda _col="#5": treeview_sort_column(self.tree_view, _col, False))
-        self.tree_view.column('#5', width=10, anchor='center', stretch=True)
-        self.tree_view.heading('#6', text='Updated', anchor='center',
-                               command=lambda _col="#6": treeview_sort_column(self.tree_view, _col, False))
-        self.tree_view.column('#6', width=10, anchor='center', stretch=True)
-        self.configure_tree_view()
-
-        def treeview_sort_column(tv, col, reverse):
-            l = [(tv.set(k, col), k) for k in tv.get_children('')]
-            l.sort(reverse=reverse)
-
-            # rearrange items in sorted positions
-            for index, (val, k) in enumerate(l):
-                tv.move(k, '', index)
-
-            # reverse sort next time
-            arrow = u'\u2191' if reverse else u'\u2193'
-            tv.heading(col, text=columns[col] + arrow,
-                       command=lambda _col=col: treeview_sort_column(tv, _col, not reverse))
+        # list all stored records
+        self.list_all()
 
     def configure_tree_view(self):
         vsb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree_view.yview)
@@ -93,29 +98,6 @@ class ContactBookApp(tk.Tk):
         hsb.place(x=40, y=310 + 200 + 1, width=620 + 20)
         self.tree_view.configure(xscrollcommand=hsb.set)
         self.tree_view.bind("<<TreeviewSelect>>", self.show_selected_record)
-
-    def register_buttons(self):
-        self.create_button = tk.Button(self, text="Create", command=self.create_contact)
-        self.update_button = tk.Button(self, text="Update", command=self.update_contact)
-        self.delete_button = tk.Button(self, text="Delete", command=self.delete_contact)
-        self.delete_all_button = tk.Button(self, text="Delete All", command=self.delete_all_contacts)
-        self.clear_button = tk.Button(self, text="Clear", command=self.clear)
-        self.list_all_button = tk.Button(self, text="List All", command=self.list_all)
-        self.search_button = tk.Button(self, text="Search", command=self.search)
-        self.exit_button = tk.Button(self, text="Exit", command=self.exit)
-
-    def register_entries(self):
-        self.name_entry = tk.Entry(self)
-        self.phone_entry = tk.Entry(self)
-        self.email_entry = tk.Entry(self)
-        self.search_entry = tk.Entry(self)
-
-    def register_labels(self):
-        self.title_label = tk.Label(self, text="Contact Book")
-        self.name_label = tk.Label(self, text="Name:")
-        self.phone_label = tk.Label(self, text="Phone Number:")
-        self.email_label = tk.Label(self, text="Email:")
-        self.search_label = tk.Label(self, text="Search:")
 
     def clear(self):
         self.name_entry.delete(0, tk.END)
@@ -207,7 +189,7 @@ class ContactBookApp(tk.Tk):
             updated = datum.get('updated', '')
             self.tree_view.insert("", 'end', text=str(c_id), values=(c_id, name, phone, email, created, updated))
 
-    def show_selected_record(self, event):
+    def show_selected_record(self, _):
         """Fill form with the data from selected record"""
         self.clear()
         for selection in self.tree_view.selection():
@@ -266,8 +248,32 @@ class ContactBookApp(tk.Tk):
             return True
         return False
 
+    @staticmethod
+    def treeview_sort_column(tree_view, column, reverse):
+        """Sort records inside treeview"""
+        columns = {
+            "#1": "ID",
+            "#2": "Name",
+            "#3": "Phone",
+            "#4": "Email",
+            "#5": "Created",
+            "#6": "Updated",
+        }
+
+        lst = [(tree_view.set(k, column), k) for k in tree_view.get_children('')]
+        lst.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(lst):
+            tree_view.move(k, '', index)
+
+        # reverse sort next time
+        arrow = u'\u2191' if reverse else u'\u2193'
+        tree_view.heading(column, text=columns[column] + arrow,
+                          command=lambda _col=column: ContactBookApp.treeview_sort_column(tree_view, _col, not reverse))
+
 
 if __name__ == "__main__":
     # Run application
-    app = ContactBookApp()
+    app = ContactBookApp(Resource())
     app.mainloop()
