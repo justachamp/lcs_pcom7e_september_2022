@@ -16,6 +16,10 @@ contact_id = 0
 class ContactBookApp(tk.Tk):
     """
         Contact Book GUI Application
+
+        source of tkinter design: https://www.c-sharpcorner.com/article/creating-a-crudcreate-retrieveupdate-and-delete-desktop-application-using-pyt2/
+        source of tree view sorting: https://stackoverflow.com/questions/1966929/tk-treeview-column-sort
+
     """
 
     def __init__(self, resource: Resource):
