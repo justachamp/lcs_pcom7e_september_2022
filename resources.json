@@ -1,1 +1,16 @@
-{}
+{
+  "1": {
+    "id": 1,
+    "name": "Person",
+    "phone": 1234556,
+    "email": "p@email.com",
+    "created": "2022-11-28T12:53:08.149424"
+  },
+  "2": {
+    "id": 2,
+    "name": "Contact",
+    "phone": 7412313,
+    "email": "c@email.com",
+    "created": "2022-11-28T12:53:08.149424"
+  }
+}

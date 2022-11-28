@@ -3,26 +3,20 @@ import os
 import typing
 
 
-class Address(typing.TypedDict):
-    street: str
-    city: str
-    country: str
-    postal_code: str
-
-
+# Type hinting for the income data
 class ResourceCreateData(typing.TypedDict):
     name: str
-    phone_number: list[int]
-    created_at: str
-    email_address: typing.Optional[str]
-    address: typing.Optional[Address]
+    phone: int
+    created: str
+    email: typing.Optional[str]
 
 
 class ResourceData(ResourceCreateData):
     id: int
-    updated_at: typing.Optional[str]
+    updated: typing.Optional[str]
 
 
+# class to work with loading and dumping data into file in json format
 class ResourceMeta:
     def __init__(self, file_path: str):
         self.data: dict[str, ResourceData] = {}
@@ -31,17 +25,21 @@ class ResourceMeta:
         self.path = file_path
 
     def load(self):
+        """ Read stored data from resources.json file"""
         with open(self.path, 'r') as f:
             self.data = json.load(f)
 
     def save(self):
+        """ Save data into resources.json file """
         with open(self.path, 'w') as f:
             json.dump(self.data, f)
 
     def __len__(self):
+        """ Get total count of contacts stored."""
         return len(self.data)
 
 
+# class which has crud, sorting and search methods
 class Resource(ResourceMeta):
     file_path = 'resources.json'
 
@@ -50,44 +48,54 @@ class Resource(ResourceMeta):
         self.load()
 
     def all(self) -> list[typing.Optional[ResourceData]]:
+        """ Get all contacts """
         return list(self.data.values())
 
     def get(self, r_id: int) -> tuple[bool, typing.Union[ResourceData, None]]:
+        """ Get contact by id"""
         r_id = str(r_id)
         if r_id not in self.data:
             return False, None
         return True, self.data[r_id]
 
     def create(self, data: ResourceCreateData) -> ResourceData:
-        r_id = max([int(k) for k in self.data.keys()]) + 1 if len(self.data) > 0 else 1
+        """ Create new contact"""
+        r_id = 1 if len(self.data) == 0 else len(self.data) + 1
         data = ResourceData(id=r_id, **data)
         self.data[str(r_id)] = data
         self.save()
         return data
 
     def update(self, data: ResourceData) -> ResourceData:
-        self.data[data['id']] = data
+        """ Update existing contact by id"""
+        self.data[str(data['id'])] = data
         self.save()
-        return self.data[data['id']]
+        return self.data[str(data['id'])]
 
-    def delete(self, data: ResourceData) -> bool:
-        del self.data[str(data['id'])]
+    def delete(self, contact_id: int) -> bool:
+        """ Delete existing contact by id"""
+        contact_id = str(contact_id)
+        del self.data[contact_id]
         self.save()
         return True
 
     def delete_all(self) -> bool:
+        """ Delete all contacts books"""
         self.data = {}
         self.save()
         return True
 
     @staticmethod
-    def sort(data: list[ResourceData], sorting: str, ordering: str):
+    def sort(data: list[ResourceData], sorting: str, ordering: typing.Literal['asc', 'desc']):
+        """ Sort contacts by name, created, updated and order by asc or desc"""
         return sorted(data, key=lambda x: x[sorting], reverse=ordering == 'desc')
 
     @staticmethod
-    def search_in_names(data: list[ResourceData], search: str) -> list[typing.Optional[ResourceData]]:
+    def search_in_names(data: list[ResourceData], search: str) -> list[ResourceData]:
+        """ Search in name"""
         return [x for x in data if search.lower() in x['name'].lower()]
 
     @staticmethod
-    def search_in_phone_number(data: list[ResourceData], search: str) -> list[typing.Optional[ResourceData]]:
-        return [x for x in data if search.lower() in x['phone_number']]
+    def search_in_phone_number(data: list[ResourceData], search: str) -> list[ResourceData]:
+        """ Search in phone number"""
+        return [x for x in data if search in str(x['phone'])]

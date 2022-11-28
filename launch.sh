@@ -1,4 +1,1 @@
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py runserver
+./venv/bin/python3.11 interface.py
